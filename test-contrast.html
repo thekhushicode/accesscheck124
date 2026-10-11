@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Accessibility Test Page — Known Violations</title>
+  <style>
+    body {
+      background-color: #ffffff;
+      color: #333333;
+      font-family: sans-serif;
+      padding: 30px;
+      line-height: 1.6;
+    }
+    .failing-heading {
+      color: #a0a0a0;
+      background-color: #ffffff;
+    }
+    .failing-body {
+      color: #8b8b8b;
+      background-color: #ffffff;
+    }
+    .failing-button {
+      background-color: #f0f0f0;
+      color: #aaaaaa;
+      padding: 10px 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .good-heading {
+      color: #0f172a;
+      background-color: #ffffff;
+    }
+  </style>
+</head>
+<body>
+  <h1 class="failing-heading">Low Contrast Page Title (Contrast 2.62:1 - FAILS AA Large)</h1>
+  <p class="failing-body">This paragraph has low contrast text on a white background (Contrast 3.55:1 - FAILS AA Normal).</p>
+  
+  <div>
+    <button class="failing-button">Low Contrast Button (Contrast 2.06:1 - FAILS AA)</button>
+    <button aria-label="Accessible Submit Button" style="color:#ffffff;background-color:#16845b;padding:10px 16px;border:0;border-radius:6px">Passing Button (Contrast 4.6:1 - PASSES)</button>
+  </div>
+
+  <div style="margin-top: 20px;">
+    <img src="/sample-icon.png">
+    <button style="width:30px;height:30px;background:#333;color:#fff;border:0;border-radius:4px">🔍</button>
+  </div>
+</body>
+</html>

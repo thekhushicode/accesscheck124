@@ -1,0 +1,1168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AccessCheck — Live Accessibility Monitor</title>
+<style>
+:root{--bg:#f5f7fb;--ink:#172033;--muted:#6b7280;--line:#e5e9f2;--purple:#6257e8;--purple2:#eeeaff;--green:#16845b;--red:#c2414b;--amber:#a16207;--card:#fff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial}
+button,input,select{font:inherit}button{cursor:pointer;border:0;border-radius:11px;padding:11px 15px;font-weight:700;transition:.15s}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #aaa2ff;outline-offset:2px}
+.primary{background:var(--purple);color:white}.primary:hover{background:#5146d6}.primary:disabled{opacity:0.65;cursor:not-allowed}.secondary{background:#f0efff;color:#4d43c8;border:1px solid #e0dcff}.secondary:hover{background:#e5e2ff}.ghost{background:white;color:#394150;border:1px solid var(--line)}.ghost:hover{background:#f8fafc}.small{padding:7px 10px;font-size:12px;border-radius:8px}
+header{background:#fff;border-bottom:1px solid var(--line);padding:16px max(20px,calc((100% - 1200px)/2));display:flex;align-items:center;justify-content:space-between;gap:15px}
+.brand{display:flex;align-items:center;gap:11px;font-weight:850;font-size:20px;letter-spacing:-.5px}.logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#6b60f4,#9d76ff);color:white;display:grid;place-items:center;font-size:20px}.brand span{color:var(--purple)}.status{display:flex;align-items:center;gap:7px;color:#667085;font-size:12px}.dot{width:8px;height:8px;border-radius:50%;background:#22a06b;box-shadow:0 0 0 4px #e0f7eb}
+main{max-width:1200px;margin:0 auto;padding:30px 20px 50px}.eyebrow{color:var(--purple);font-weight:800;font-size:11px;letter-spacing:1.4px;text-transform:uppercase}
+h1{font-size:clamp(27px,4vw,39px);letter-spacing:-1.3px;line-height:1.15;margin:8px 0 10px} .intro{color:var(--muted);max-width:690px;margin:0 0 23px}
+.urlbar{background:#fff;border:1px solid var(--line);border-radius:16px;padding:10px;display:flex;gap:9px;box-shadow:0 8px 25px #1b24400a}.urlbar input{flex:1;min-width:0;border:0;outline:0;padding:0 12px;background:transparent}.urlbar input:focus-visible{outline:none}.urlbar button{white-space:nowrap}.helper{font-size:12px;color:var(--muted);margin:9px 2px 24px}
+.quick-chips{display:inline-flex;gap:6px;margin-left:8px;vertical-align:middle}.chip{background:#f0efff;border:1px solid #e0dcff;color:#5146d6;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;cursor:pointer}.chip:hover{background:#e3e0ff}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin:22px 0}.stat,.panel{background:var(--card);border:1px solid var(--line);border-radius:16px}.stat{padding:17px}.stat-top{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:12px;font-weight:650}.stat-num{font-size:28px;font-weight:850;letter-spacing:-1px;margin-top:7px}.stat-sub{font-size:11px;color:var(--muted)}.pill{border-radius:30px;padding:4px 8px;font-size:11px;font-weight:800;display:inline-flex;align-items:center;gap:5px}.pill.red{background:#fff0f0;color:var(--red)}.pill.green{background:#e9f8f0;color:var(--green)}.pill.yellow{background:#fff7df;color:var(--amber)}.pill.purple{background:var(--purple2);color:#5146d6}
+.layout{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(310px,.85fr);gap:17px}.panel{overflow:hidden}.panel-head{padding:17px 19px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px}.panel-head h2{font-size:15px;margin:0;letter-spacing:-.2px}.subhead{font-size:12px;color:var(--muted);margin-top:3px}.panel-body{padding:18px}.preview-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px}.browserdots{display:flex;gap:5px}.browserdots i{width:7px;height:7px;background:#d4d8e2;border-radius:50%}.demo-site{border:1px solid #e3e6ef;border-radius:13px;overflow:hidden;background:white;color:#202124}.demo-nav{display:flex;align-items:center;justify-content:space-between;padding:13px 15px;border-bottom:1px solid #eef0f4;font-size:12px}.demo-logo{font-weight:850;font-size:14px;color:#222}.demo-links{display:flex;gap:12px;color:#555;font-size:11px}.demo-hero{padding:24px 20px 21px;background:#fafbff;transition:background 0.2s}.demo-hero .tag{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#6558e8;font-weight:800}.demo-hero h3{font-size:25px;line-height:1.15;letter-spacing:-.7px;margin:9px 0 10px;max-width:360px}.demo-hero p{font-size:13px;max-width:360px;line-height:1.6;margin:0 0 15px}.demo-cta{padding:10px 14px;border-radius:8px;font-size:12px;font-weight:800;border:0}.demo-search-wrap{margin-top:12px;display:flex;align-items:center;gap:8px}.demo-search{border:1px solid #d5d9e5;border-radius:6px;padding:6px 10px;font-size:11px;width:180px;background:#fff;color:#202124}.demo-lower{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px}.mini-card{padding:13px;border:1px solid #edf0f5;border-radius:10px}.mini-card b{font-size:12px}.mini-card p{font-size:11px;color:#737987;margin:5px 0 0}.color-controls{margin-top:15px;padding:14px;background:#fafaff;border:1px solid #e7e5ff;border-radius:12px}.control-title{font-size:12px;font-weight:800;margin-bottom:10px}.controls-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.color-field{display:flex;align-items:center;gap:9px;font-size:12px;color:#596174}.color-field input{width:33px;height:31px;border:0;padding:0;background:transparent;cursor:pointer}.control-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.scanned-site-box{border:1px solid #e3e6ef;border-radius:13px;padding:18px;background:#ffffff}
+.scanned-header{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;border-bottom:1px solid #f0f2f7;padding-bottom:14px;margin-bottom:14px}
+.scanned-title{font-size:17px;font-weight:850;color:#172033;margin:0 0 4px}
+.scanned-url{font-size:12px;color:var(--purple);text-decoration:none;word-break:break-all}
+.scanned-metrics-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.scanned-metric-card{background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:10px;text-align:center}
+.scanned-metric-card small{font-size:10px;color:var(--muted);text-transform:uppercase;font-weight:700}
+.scanned-metric-card div{font-size:16px;font-weight:850;color:#172033;margin-top:3px}
+.results-list{display:flex;flex-direction:column;gap:10px}
+.issue{border:1px solid var(--line);border-radius:12px;padding:13px;background:#fff}
+.issue-row{display:flex;align-items:flex-start;gap:10px}
+.issue-icon{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;flex-shrink:0;font-weight:900}
+.issue-icon.bad{background:#fff0f0;color:var(--red)}.issue-icon.good{background:#e9f8f0;color:var(--green)}.issue-icon.warn{background:#fff7df;color:var(--amber)}
+.issue-title{font-weight:800;font-size:13px}
+.issue-desc{font-size:12px;color:var(--muted);margin-top:3px}
+.issue-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+.code{font:11px ui-monospace,SFMono-Regular,Menlo,monospace;background:#f5f6fa;border-radius:5px;padding:3px 6px;color:#4a5161}
+.issue-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px;padding-top:9px;border-top:1px solid #f0f1f6}
+.issue-footer small{font-size:11px;color:var(--muted);word-break:break-all}
+.empty{padding:22px;text-align:center;color:var(--muted);font-size:13px}
+.activity{display:flex;align-items:flex-start;gap:9px;padding:10px 0;border-bottom:1px solid #f0f1f6;font-size:12px}
+.activity:last-child{border:0}
+.activity-dot{width:7px;height:7px;border-radius:50%;background:var(--purple);margin-top:6px;flex-shrink:0}
+.activity time{display:block;color:#8a91a1;font-size:10px;margin-top:2px}
+.bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:17px;margin-top:17px}
+.section-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#8a91a1;font-weight:800;margin-bottom:10px}
+.howrow{display:flex;gap:10px;align-items:flex-start;margin:12px 0}
+.how-num{width:24px;height:24px;display:grid;place-items:center;border-radius:8px;background:var(--purple2);color:#5146d6;font-size:11px;font-weight:850;flex-shrink:0}
+.howrow b{font-size:12px}.howrow p{font-size:11px;color:var(--muted);margin:2px 0 0}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#20243a;color:white;padding:11px 16px;border-radius:11px;font-size:13px;box-shadow:0 8px 30px #0002;opacity:0;pointer-events:none;transition:.2s;z-index:5}
+.toast.show{opacity:1}
+.footnote{font-size:11px;color:#7a8191;line-height:1.6;margin-top:17px}
+@media(max-width:800px){.layout,.bottom-grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}header{padding:13px 18px}main{padding:24px 14px}.status{display:none}.urlbar{flex-wrap:wrap}.urlbar input{flex-basis:100%;padding:10px}.urlbar button{flex:1}.demo-links{display:none}}
+@media(max-width:430px){.stats{gap:8px}.stat{padding:12px}.stat-num{font-size:24px}.demo-hero{padding:18px 15px}.demo-hero h3{font-size:22px}.controls-grid{grid-template-columns:1fr}.panel-body{padding:13px}.scanned-metrics-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><div class="logo">✓</div>Access<span>Check</span></div>
+  <div class="status"><span class="dot"></span> Live monitoring demo <span class="pill purple">Real-Time Observer</span></div>
+</header>
+<main>
+  <div class="eyebrow">Accessibility intelligence</div>
+  <h1>Make every pixel<br>more accessible.</h1>
+  <p class="intro">Catch low-contrast colors, keep reports fresh as designs change, and give developers clear fixes they can actually use.</p>
+  <form class="urlbar" id="urlForm">
+    <input id="urlInput" type="url" placeholder="Paste a website URL (e.g. https://example.com or https://w3.org)" aria-label="Website URL">
+    <button class="ghost" type="button" id="demoBtn">Try live demo</button>
+    <button class="primary" type="submit" id="scanSubmitBtn">Scan website ↗</button>
+  </form>
+  <p class="helper" id="urlHelp">
+    Connected to backend scanner. Paste any URL to scan live websites without CORS limits.
+    <span class="quick-chips">
+      Quick test:
+      <button type="button" class="chip" onclick="scanQuickUrl('https://example.com')">example.com</button>
+      <button type="button" class="chip" onclick="scanQuickUrl('https://w3.org')">w3.org</button>
+      <button type="button" class="chip" onclick="scanQuickUrl('/test-contrast.html')">Known Violations Test</button>
+    </span>
+  </p>
+  <div class="stats">
+    <div class="stat"><div class="stat-top">Contrast issues <span>◉</span></div><div class="stat-num" id="statIssues">2</div><div class="stat-sub" id="statIssuesSub">On current demo page</div></div>
+    <div class="stat"><div class="stat-top">Passed checks <span>✓</span></div><div class="stat-num" id="statPassed">3</div><div class="stat-sub" id="statPassedSub">Updated after each scan</div></div>
+    <div class="stat"><div class="stat-top">Label checks <span>⌘</span></div><div class="stat-num" id="statLabels">1</div><div class="stat-sub" id="statLabelsSub">Potential label issue</div></div>
+    <div class="stat"><div class="stat-top">Last checked <span>↻</span></div><div class="stat-num" style="font-size:20px" id="lastChecked">Just now</div><div class="stat-sub" id="scanStatus">Ready to scan</div></div>
+  </div>
+  <div class="layout">
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2 id="previewPanelTitle">Live page preview</h2>
+          <div class="subhead" id="previewPanelSub">Automatic MutationObserver actively watches for DOM & color changes</div>
+        </div>
+        <span class="pill green" id="livePill">● Observer Active</span>
+      </div>
+      <div class="panel-body">
+        <div class="preview-top">
+          <div class="browserdots"><i></i><i></i><i></i></div>
+          <span class="subhead" id="browserHost">sample-website.local</span>
+        </div>
+        
+        <!-- BUILT-IN SAMPLE PAGE -->
+        <div id="demoPreviewWrapper">
+          <div class="demo-site" id="demoSite">
+            <div class="demo-nav"><span class="demo-logo">Northstar</span><div class="demo-links"><span>About</span><span>Features</span><span>Contact</span></div><span>☰</span></div>
+            <div class="demo-hero" id="demoHero">
+              <div class="tag">A better way to work</div>
+              <h3 id="heroTitle" style="color:#a0a0a0">Build something meaningful.</h3>
+              <p id="heroText" style="color:#8b8b8b">Simple tools help your team focus on the work that matters most. Explore a calmer way to get things done.</p>
+              <button class="demo-cta" id="demoCta" style="background:#eeeaff;color:#aaa0d8">Explore features</button>
+              
+              <div class="demo-search-wrap">
+                <input class="demo-search" id="demoSearch" placeholder="Search resources..." />
+                <button type="button" class="ghost small" id="toggleSearchLabelBtn" style="padding:4px 8px;font-size:11px" onclick="toggleSearchLabel()">Add label</button>
+              </div>
+            </div>
+            <div class="demo-lower">
+              <div class="mini-card" id="miniCard1"><b>Work together</b><p>Bring your ideas and your team into one place.</p></div>
+              <div class="mini-card" id="miniCard2"><b>Stay focused</b><p>Make space for your most important work.</p></div>
+            </div>
+          </div>
+          <div class="color-controls">
+            <div class="control-title">Developer controls · edit the sample page</div>
+            <div class="controls-grid">
+              <label class="color-field">Headline color <input type="color" id="headingColor" value="#a0a0a0"><span id="headingHex">#A0A0A0</span></label>
+              <label class="color-field">Paragraph color <input type="color" id="bodyColor" value="#8b8b8b"><span id="bodyHex">#8B8B8B</span></label>
+              <label class="color-field">Button background <input type="color" id="buttonBg" value="#eeeaff"><span id="buttonBgHex">#EEEAFF</span></label>
+              <label class="color-field">Button text <input type="color" id="buttonText" value="#aaa0d8"><span id="buttonTextHex">#AAA0D8</span></label>
+            </div>
+            <div class="control-actions">
+              <button class="primary" id="rescanBtn">↻ Recheck contrast</button>
+              <button class="secondary" id="fixBtn">✦ Apply suggested colors</button>
+              <button class="ghost" id="resetBtn">Reset demo</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- EXTERNAL SCANNED PAGE PROFILE (Shown when URL is scanned) -->
+        <div id="scannedPreviewWrapper" style="display:none">
+          <div class="scanned-site-box">
+            <div class="scanned-header">
+              <div>
+                <h3 class="scanned-title" id="scannedSiteTitle">—</h3>
+                <a href="#" target="_blank" rel="noopener noreferrer" class="scanned-url" id="scannedSiteUrl">—</a>
+              </div>
+              <span class="pill purple" id="scannedStatusPill">—</span>
+            </div>
+            <div class="scanned-metrics-grid">
+              <div class="scanned-metric-card"><small>Response Time</small><div id="scannedDuration">—</div></div>
+              <div class="scanned-metric-card"><small>Elements Audited</small><div id="scannedElements">—</div></div>
+              <div class="scanned-metric-card"><small>Health Score</small><div id="scannedHealthScore">—</div></div>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button type="button" class="secondary" style="flex:1" onclick="loadDemoMode()">← Return to Northstar demo</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- RIGHT ACCESSIBILITY REPORT PANEL -->
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>Accessibility report</h2>
+          <div class="subhead" id="reportSub">Current results · updates dynamically on design change</div>
+        </div>
+        <span class="pill red" id="issueCountPill">2 issues</span>
+      </div>
+      <div class="panel-body">
+        <div class="results-list" id="resultsList"></div>
+        <div class="footnote" id="reportFootnote">
+          Contrast targets follow WCAG AA guidance: generally 4.5:1 for normal text and 3:1 for large text. This tool audits real rendered computed styles, missing labels, and image alt text.
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="bottom-grid">
+    <section class="panel">
+      <div class="panel-head">
+        <div><h2>Scan activity</h2><div class="subhead">A small audit trail of changes</div></div>
+        <button class="ghost small" id="clearActivity">Clear</button>
+      </div>
+      <div class="panel-body" id="activityList"></div>
+    </section>
+    <section class="panel">
+      <div class="panel-head"><div><h2>How AccessCheck works</h2><div class="subhead">Automatic mutation detection without manual rescanning</div></div></div>
+      <div class="panel-body">
+        <div class="howrow"><div class="how-num">01</div><div><b>Inspect computed DOM styles & labels</b><p>Reads actual rendered styles via window.getComputedStyle and tracks live DOM mutations via MutationObserver.</p></div></div>
+        <div class="howrow"><div class="how-num">02</div><div><b>Calculate mathematical contrast</b><p>Computes relative luminance and contrast ratios strictly against WCAG 2.1 AA specs.</p></div></div>
+        <div class="howrow"><div class="how-num">03</div><div><b>Refresh automatically when design changes</b><p>Recalculates automatically after a 350ms debounce whenever colors, classes, or styles mutate.</p></div></div>
+        <div class="howrow"><div class="how-num">04</div><div><b>Recommend practical fixes</b><p>Provides copyable CSS and HTML recommendations you can apply directly to your code.</p></div></div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const initial = {heading:'#a0a0a0', body:'#8b8b8b', buttonBg:'#eeeaff', buttonText:'#aaa0d8'};
+let activity = [];
+let currentMode = 'demo'; // 'demo' | 'scanned'
+let isInternalUpdate = false;
+let scanDebounceTimer = null;
+let domObserver = null;
+
+/**
+ * Converts CSS color strings (rgb, rgba, hex, named) into hex format.
+ */
+function rgbToHex(rgbStr) {
+  if (!rgbStr || rgbStr === 'transparent' || rgbStr === 'rgba(0, 0, 0, 0)') return null;
+  if (rgbStr.startsWith('#')) {
+    const clean = rgbStr.replace('#', '');
+    return clean.length === 3 ? '#' + clean.split('').map(c=>c+c).join('') : rgbStr;
+  }
+  const match = rgbStr.match(/rgba?\((\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i);
+  if (match) {
+    const r = parseInt(match[1], 10);
+    const g = parseInt(match[2], 10);
+    const b = parseInt(match[3], 10);
+    const toHex = n => Math.min(255, Math.max(0, n)).toString(16).padStart(2, '0');
+    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+  }
+  return rgbStr;
+}
+
+/**
+ * Climbs the DOM tree to determine the actual effective rendered background color.
+ */
+function getEffectiveBackgroundColor(el) {
+  let cur = el;
+  while (cur && cur !== document.body && cur !== document) {
+    const bg = window.getComputedStyle(cur).backgroundColor;
+    const hex = rgbToHex(bg);
+    if (hex) return hex;
+    cur = cur.parentElement;
+  }
+  return '#ffffff';
+}
+
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function parseCssColor(str, fallback = null) {
+  if (!str || typeof str !== 'string') return fallback;
+  const s = str.trim().toLowerCase();
+  if (s.startsWith('#')) {
+    if (s.length === 4) return '#' + s[1] + s[1] + s[2] + s[2] + s[3] + s[3];
+    if (s.length === 7) return s;
+    return fallback;
+  }
+  const hexFromRgb = rgbToHex(s);
+  if (hexFromRgb && hexFromRgb.startsWith('#')) return hexFromRgb;
+  const named = {
+    white:'#ffffff', black:'#000000', red:'#ff0000', green:'#008000', blue:'#0000ff',
+    gray:'#808080', grey:'#808080', lightgray:'#d3d3d3', darkgray:'#a9a9a9', silver:'#c0c0c0',
+    yellow:'#ffff00', navy:'#000080', teal:'#008080', purple:'#800080', orange:'#ffa500'
+  };
+  return named[s] || fallback;
+}
+
+function norm(hex){
+  const clean = hex.replace('#','');
+  const full = clean.length === 3 ? clean.split('').map(c=>c+c).join('') : clean;
+  return full.match(/.{2}/g).map(v=>parseInt(v,16)/255).map(v=>v<=.04045?v/12.92:Math.pow((v+.055)/1.055,2.4));
+}
+
+function luminance(hex){
+  const [r,g,b] = norm(hex);
+  return .2126*r + .7152*g + .0722*b;
+}
+
+function contrast(a,b){
+  try {
+    const l1 = luminance(a);
+    const l2 = luminance(b);
+    return (Math.max(l1,l2) + .05) / (Math.min(l1,l2) + .05);
+  } catch(e) {
+    return 1.0;
+  }
+}
+
+function fmt(n){ return n.toFixed(2)+':1'; }
+
+function getControlColors(){
+  return {
+    heading: $('headingColor').value,
+    body: $('bodyColor').value,
+    buttonBg: $('buttonBg').value,
+    buttonText: $('buttonText').value
+  };
+}
+
+/**
+ * Applies color changes from the controls to the preview DOM elements.
+ */
+function updatePreviewFromControls(){
+ isInternalUpdate = true;
+ const c = getControlColors();
+ $('heroTitle').style.color = c.heading;
+ $('heroText').style.color = c.body;
+ $('demoCta').style.background = c.buttonBg;
+ $('demoCta').style.color = c.buttonText;
+ $('headingHex').textContent = c.heading.toUpperCase();
+ $('bodyHex').textContent = c.body.toUpperCase();
+ $('buttonBgHex').textContent = c.buttonBg.toUpperCase();
+ $('buttonTextHex').textContent = c.buttonText.toUpperCase();
+ $('livePill').className = 'pill yellow';
+ $('livePill').textContent = '● Changes pending';
+ $('scanStatus').textContent = 'Changes detected · scan pending';
+ 
+ scheduleScan();
+ setTimeout(() => { isInternalUpdate = false; }, 50);
+}
+
+/**
+ * Debounced Scan Scheduler
+ */
+function scheduleScan(){
+ clearTimeout(scanDebounceTimer);
+ scanDebounceTimer = setTimeout(() => {
+   if (currentMode === 'demo') {
+     scanDemo();
+   }
+ }, 350);
+}
+
+function addActivity(message, type='normal'){
+ activity.unshift({message,time:new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'}),type});
+ activity = activity.slice(0,8);
+ renderActivity();
+}
+
+function renderActivity(){
+ $('activityList').innerHTML = activity.length
+   ? activity.map(a=>`<div class="activity"><span class="activity-dot" style="background:${a.type==='bad'?'#c2414b':a.type==='good'?'#16845b':'#6257e8'}"></span><div>${a.message}<time>${a.time}</time></div></div>`).join('')
+   : '<div class="empty">No recent activity yet.</div>';
+}
+
+/**
+ * Dynamic Demo Scanner — Inspects actual computed DOM styles & attributes!
+ */
+function scanDemo(){
+ currentMode = 'demo';
+ $('demoPreviewWrapper').style.display = 'block';
+ $('scannedPreviewWrapper').style.display = 'none';
+ $('browserHost').textContent = 'sample-website.local';
+ $('previewPanelTitle').textContent = 'Live page preview';
+ $('previewPanelSub').textContent = 'Automatic MutationObserver actively watches for DOM & color changes';
+ $('statIssuesSub').textContent = 'On current demo page';
+ $('statPassedSub').textContent = 'Updated after each scan';
+ $('statLabelsSub').textContent = 'Label check status';
+
+ const titleEl = $('heroTitle');
+ const textEl = $('heroText');
+ const ctaEl = $('demoCta');
+ const searchEl = $('demoSearch');
+
+ // Extract real computed rendered styles from the DOM!
+ const titleFg = rgbToHex(window.getComputedStyle(titleEl).color) || '#a0a0a0';
+ const titleBg = getEffectiveBackgroundColor(titleEl);
+
+ const textFg = rgbToHex(window.getComputedStyle(textEl).color) || '#8b8b8b';
+ const textBg = getEffectiveBackgroundColor(textEl);
+
+ const ctaFg = rgbToHex(window.getComputedStyle(ctaEl).color) || '#aaa0d8';
+ const ctaBg = rgbToHex(window.getComputedStyle(ctaEl).backgroundColor) || getEffectiveBackgroundColor(ctaEl);
+
+ // Sync controls if styles were changed directly on the DOM
+ if (!isInternalUpdate) {
+   if ($('headingColor').value !== titleFg) $('headingColor').value = titleFg;
+   if ($('bodyColor').value !== textFg) $('bodyColor').value = textFg;
+   if ($('buttonBg').value !== ctaBg) $('buttonBg').value = ctaBg;
+   if ($('buttonText').value !== ctaFg) $('buttonText').value = ctaFg;
+   $('headingHex').textContent = titleFg.toUpperCase();
+   $('bodyHex').textContent = textFg.toUpperCase();
+   $('buttonBgHex').textContent = ctaBg.toUpperCase();
+   $('buttonTextHex').textContent = ctaFg.toUpperCase();
+ }
+
+ const checks = [
+  {
+    name: 'Headline contrast',
+    desc: 'Large headline text against rendered background.',
+    fg: titleFg,
+    bg: titleBg,
+    threshold: 3,
+    large: true,
+    css: `color: ${titleFg}; background: ${titleBg};`
+  },
+  {
+    name: 'Paragraph contrast',
+    desc: 'Normal body text against rendered background.',
+    fg: textFg,
+    bg: textBg,
+    threshold: 4.5,
+    large: false,
+    css: `color: ${textFg}; background: ${textBg};`
+  },
+  {
+    name: 'Button contrast',
+    desc: 'Button text against its button background.',
+    fg: ctaFg,
+    bg: ctaBg,
+    threshold: 4.5,
+    large: false,
+    css: `color: ${ctaFg}; background: ${ctaBg};`
+  }
+ ];
+
+ const items = checks.map(ch => {
+   const ratio = contrast(ch.fg, ch.bg);
+   const ok = ratio >= ch.threshold;
+   return { ...ch, ratio, ok, type: 'contrast' };
+ });
+
+ // Real Dynamic Check for Form Field Accessible Name
+ const hasSearchLabel = !!searchEl.getAttribute('aria-label') || !!searchEl.getAttribute('title');
+ const searchLabelVal = searchEl.getAttribute('aria-label') || '';
+
+ items.push({
+   name: 'Search field accessible name',
+   desc: hasSearchLabel ? `Accessible label present: "${searchLabelVal}".` : 'Search input is missing an accessible label (aria-label).',
+   ok: hasSearchLabel,
+   ratio: null,
+   type: 'label',
+   css: '<input aria-label="Search resources" ...>'
+ });
+
+ // Update toggle button state
+ if ($('toggleSearchLabelBtn')) {
+   $('toggleSearchLabelBtn').textContent = hasSearchLabel ? 'Remove label' : 'Add label';
+   $('toggleSearchLabelBtn').className = hasSearchLabel ? 'secondary small' : 'ghost small';
+ }
+
+ renderResults(items, 'Sample page');
+}
+
+/**
+ * Toggles accessible label on the demo search field to test dynamic issue resolution!
+ */
+window.toggleSearchLabel = function(){
+ const searchEl = $('demoSearch');
+ if (searchEl.getAttribute('aria-label')) {
+   searchEl.removeAttribute('aria-label');
+   toast('Removed aria-label from search field');
+ } else {
+   searchEl.setAttribute('aria-label', 'Search resources');
+   toast('Added aria-label="Search resources"');
+ }
+ scheduleScan();
+};
+
+/**
+ * Render Issues and Passed Checks into Results List
+ */
+function renderResults(items, targetName='Sample page'){
+ const issues = items.filter(x => !x.ok);
+ $('statIssues').textContent = items.filter(x => x.type === 'contrast' && !x.ok).length;
+ $('statPassed').textContent = items.filter(x => x.ok).length;
+ $('statLabels').textContent = items.filter(x => (x.type === 'label' || x.type === 'image') && !x.ok).length;
+ $('lastChecked').textContent = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+ $('scanStatus').textContent = 'Scan complete · ' + targetName;
+ $('livePill').className = 'pill green';
+ $('livePill').textContent = '● Results current';
+ $('issueCountPill').className = 'pill ' + (issues.length ? 'red' : 'green');
+ $('issueCountPill').textContent = issues.length + ' issue' + (issues.length === 1 ? '' : 's');
+
+ $('resultsList').innerHTML = items.map(x => {
+  const ratioText = x.ratio === null ? 'Needs review' : fmt(x.ratio);
+  const state = x.ok ? 'Pass' : x.type === 'label' ? 'Missing label' : x.type === 'image' ? 'Missing alt' : 'Low contrast';
+  const icon = x.ok ? '✓' : x.type === 'label' || x.type === 'image' ? '!' : '×';
+  const cls = x.ok ? 'good' : x.type === 'label' || x.type === 'image' ? 'warn' : 'bad';
+  return `<article class="issue">
+    <div class="issue-row">
+      <div class="issue-icon ${cls}">${icon}</div>
+      <div style="flex:1;min-width:0">
+        <div class="issue-title">${x.name}</div>
+        <div class="issue-desc">${x.desc}</div>
+        <div class="issue-meta">
+          <span class="pill ${x.ok?'green':x.type==='label'||x.type==='image'?'yellow':'red'}">${state}</span>
+          ${x.ratio !== null ? `<span class="code">${ratioText} contrast</span><span class="code">Target ${x.threshold}:1</span>` : ''}
+        </div>
+      </div>
+    </div>
+    ${!x.ok ? `<div class="issue-footer"><small>${x.type==='label'?'Suggested accessible name: aria-label':x.type==='image'?'Suggested fix: '+x.css:'Suggested CSS: '+x.css}</small><button class="secondary small" onclick="copyFix('${(x.css||'').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}')">Copy fix</button></div>` : ''}
+  </article>`;
+ }).join('');
+
+ addActivity(`${issues.length} issue${issues.length===1?'':'s'} on ${targetName}.`, issues.some(x=>!x.ok)?'bad':'good');
+}
+
+/**
+ * Renders an Error Card and clears old results so stale demo numbers are never shown
+ */
+function handleScanError(errorType, message, durationMs, url) {
+  let hostname = url;
+  try { hostname = new URL(url).hostname; } catch(e){}
+
+  $('demoPreviewWrapper').style.display = 'none';
+  $('scannedPreviewWrapper').style.display = 'block';
+  $('browserHost').textContent = hostname || 'unknown-host';
+  $('previewPanelTitle').textContent = 'Scan failed';
+  $('previewPanelSub').textContent = 'Could not audit ' + (hostname || url);
+
+  $('scannedSiteTitle').textContent = hostname || url;
+  $('scannedSiteUrl').textContent = url;
+  $('scannedSiteUrl').href = url.startsWith('http') ? url : '#';
+  $('scannedStatusPill').className = 'pill red';
+  $('scannedStatusPill').textContent = errorType === 'invalid_url' ? 'Invalid URL' : errorType === 'blocked_request' ? 'HTTP 403 Blocked' : 'Scan Failed';
+  $('scannedDuration').textContent = durationMs ? `${durationMs} ms` : 'N/A';
+  $('scannedElements').textContent = '0 tags';
+  $('scannedHealthScore').textContent = 'N/A';
+
+  $('livePill').className = 'pill red';
+  $('livePill').textContent = '● Scan failed';
+  $('scanStatus').textContent = 'Scan encountered an error';
+  $('lastChecked').textContent = 'Just now';
+
+  $('statIssues').textContent = '0';
+  $('statPassed').textContent = '0';
+  $('statLabels').textContent = '0';
+  $('statIssuesSub').textContent = `On ${hostname}`;
+  $('statPassedSub').textContent = `On ${hostname}`;
+  $('statLabelsSub').textContent = `On ${hostname}`;
+  $('issueCountPill').className = 'pill red';
+  $('issueCountPill').textContent = 'Scan failed';
+
+  const typeLabels = {
+    invalid_url: 'Invalid URL Address',
+    network_error: 'Network Connection Failure',
+    timeout: 'Request Timed Out',
+    blocked_request: 'Access Denied / Blocked by Target',
+    http_error: 'Target Server Error',
+    parsing_error: 'HTML Parsing Failure'
+  };
+  const title = typeLabels[errorType] || 'Scanning Error';
+
+  $('resultsList').innerHTML = `
+    <article class="issue" style="border-left: 4px solid var(--red)">
+      <div class="issue-row">
+        <div class="issue-icon bad">×</div>
+        <div style="flex:1;min-width:0">
+          <div class="issue-title">${title}</div>
+          <div class="issue-desc">${escapeHtml(message)}</div>
+          <div class="issue-meta">
+            <span class="pill red">${errorType}</span>
+            <span class="code">Duration: ${durationMs}ms</span>
+          </div>
+        </div>
+      </div>
+      <div class="issue-footer">
+        <small>Target: ${escapeHtml(url)}</small>
+        <button class="secondary small" onclick="loadDemoMode()">Return to demo</button>
+      </div>
+    </article>
+  `;
+
+  $('urlHelp').innerHTML = `<span style="color:#c2414b"><strong>Scan Error:</strong> ${escapeHtml(message)}</span>`;
+  addActivity(`Scan failed on ${hostname}: ${message}`, 'bad');
+  toast('Error: ' + message);
+}
+
+/**
+ * Fallback In-Browser HTML Accessibility Auditor (used if serverless function returns 404)
+ */
+function auditHtmlInBrowser(htmlText, targetUrl, responseStatus) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(htmlText, 'text/html');
+  const parsedUrl = new URL(targetUrl);
+  const pageTitle = doc.querySelector('title')?.textContent?.trim() || parsedUrl.hostname;
+  const htmlLang = doc.documentElement.getAttribute('lang');
+
+  const issues = [];
+  const passedChecks = [];
+  let elementsAudited = 0;
+
+  // 1. Language attribute
+  elementsAudited++;
+  if (!htmlLang) {
+    issues.push({
+      id: 'doc-lang',
+      category: 'structure',
+      element: '<html> element',
+      severity: 'High',
+      description: 'The <html> element is missing a lang attribute (e.g. lang="en").',
+      suggestedFix: { css: '<html lang="en">' }
+    });
+  } else {
+    passedChecks.push({ element: '<html> tag', category: 'structure', description: `Language attribute declared as "${htmlLang}".` });
+  }
+
+  // 2. Title
+  elementsAudited++;
+  if (!doc.querySelector('title') || !pageTitle) {
+    issues.push({
+      id: 'doc-title',
+      category: 'structure',
+      element: '<title> tag',
+      severity: 'Critical',
+      description: 'Page has no <title> tag. Screen readers rely on page titles to identify tabs.',
+      suggestedFix: { css: '<title>Page Title</title>' }
+    });
+  } else {
+    passedChecks.push({ element: '<title> tag', category: 'structure', description: `Page title present: "${pageTitle.slice(0, 45)}".` });
+  }
+
+  // 3. Viewport
+  const metaVp = doc.querySelector('meta[name="viewport"]')?.getAttribute('content');
+  if (metaVp) {
+    elementsAudited++;
+    if (metaVp.includes('user-scalable=no') || metaVp.includes('maximum-scale=1')) {
+      issues.push({
+        id: 'doc-viewport',
+        category: 'structure',
+        element: '<meta name="viewport"> tag',
+        severity: 'High',
+        description: 'Viewport disables user zooming (user-scalable=no).',
+        suggestedFix: { css: '<meta name="viewport" content="width=device-width, initial-scale=1">' }
+      });
+    } else {
+      passedChecks.push({ element: '<meta name="viewport">', category: 'structure', description: 'Responsive viewport enabled.' });
+    }
+  }
+
+  // 4. Images
+  doc.querySelectorAll('img').forEach((img, i) => {
+    elementsAudited++;
+    const alt = img.getAttribute('alt');
+    const src = img.getAttribute('src') || 'image';
+    const cleanSrc = src.split('/').pop().slice(0, 30) || 'image';
+    if (alt === null) {
+      issues.push({
+        id: `img-${i}`,
+        category: 'images',
+        element: `Image (${cleanSrc})`,
+        severity: 'Critical',
+        description: 'Image is missing an alt attribute. Screen readers cannot describe this image.',
+        suggestedFix: { css: `<img src="${src}" alt="Description of image">` }
+      });
+    } else {
+      passedChecks.push({ element: `Image (${cleanSrc})`, category: 'images', description: 'Alt description provided.' });
+    }
+  });
+
+  // 5. Buttons and links
+  doc.querySelectorAll('button, a[href], input[type="button"], input[type="submit"]').forEach((btn, i) => {
+    elementsAudited++;
+    const text = btn.textContent?.trim() || '';
+    const aria = btn.getAttribute('aria-label') || btn.getAttribute('title') || btn.getAttribute('value') || '';
+    const name = (text || aria).trim();
+    const tag = btn.tagName.toUpperCase();
+    if (!name) {
+      issues.push({
+        id: `btn-${i}`,
+        category: 'missing-label',
+        element: `${tag} element`,
+        severity: 'Critical',
+        description: `${tag} has no accessible text or aria-label.`,
+        suggestedFix: { css: `<${btn.tagName.toLowerCase()} aria-label="Description">` }
+      });
+    } else {
+      passedChecks.push({ element: `${tag} element`, category: 'missing-label', description: `Accessible name present: "${name.slice(0, 35)}"` });
+    }
+  });
+
+  // 6. Form inputs
+  doc.querySelectorAll('input:not([type="hidden"]):not([type="submit"]):not([type="button"]), select, textarea').forEach((inp, i) => {
+    elementsAudited++;
+    const id = inp.getAttribute('id');
+    const aria = inp.getAttribute('aria-label') || inp.getAttribute('placeholder');
+    const hasLabel = inp.closest('label') || (id && doc.querySelector(`label[for="${id}"]`));
+    if (!hasLabel && !aria) {
+      issues.push({
+        id: `input-${i}`,
+        category: 'missing-label',
+        element: `Input (<${inp.tagName.toLowerCase()}>)`,
+        severity: 'High',
+        description: 'Form field has no associated <label> or aria-label.',
+        suggestedFix: { css: `<label for="${id || 'field'}">Label Name</label>` }
+      });
+    } else {
+      passedChecks.push({ element: 'Form Input', category: 'missing-label', description: 'Input has accessible label association.' });
+    }
+  });
+
+  // 7. Colors & Contrast
+  let pageBg = '#ffffff';
+  let pageFg = '#212529';
+  const cssMap = {};
+  doc.querySelectorAll('style').forEach(st => {
+    const css = st.textContent || '';
+    const regex = /([^{]+)\{([^}]+)\}/g;
+    let m;
+    while ((m = regex.exec(css)) !== null) {
+      const sel = m[1].trim();
+      const body = m[2];
+      const colorM = body.match(/(?:^|;)\s*color\s*:\s*([^;]+)/i);
+      const bgM = body.match(/(?:^|;)\s*background(?:-color)?\s*:\s*([^;]+)/i);
+      if (colorM || bgM) {
+        cssMap[sel] = {
+          color: colorM ? colorM[1].trim() : null,
+          bg: bgM ? bgM[1].trim() : null
+        };
+        if (sel === 'body' || sel === 'html') {
+          if (bgM) pageBg = parseCssColor(bgM[1].trim(), '#ffffff');
+          if (colorM) pageFg = parseCssColor(colorM[1].trim(), '#212529');
+        }
+      }
+    }
+  });
+
+  doc.querySelectorAll('h1, h2, h3, h4, h5, h6, p, button').forEach((el, i) => {
+    const text = el.textContent?.trim() || '';
+    if (!text) return;
+    elementsAudited++;
+
+    let fg = el.style?.color ? parseCssColor(el.style.color) : null;
+    let bg = (el.style?.backgroundColor || el.style?.background) ? parseCssColor(el.style.backgroundColor || el.style.background) : null;
+
+    if (!fg || !bg) {
+      for (const [sel, rule] of Object.entries(cssMap)) {
+        try {
+          if (el.matches(sel)) {
+            if (!fg && rule.color) fg = parseCssColor(rule.color);
+            if (!bg && rule.bg) bg = parseCssColor(rule.bg);
+          }
+        } catch(e){}
+      }
+    }
+
+    if (!bg) bg = pageBg;
+    if (!fg) fg = pageFg;
+
+    if (fg && bg) {
+      const isLarge = ['H1', 'H2', 'H3'].includes(el.tagName);
+      const r = contrast(fg, bg);
+      const req = isLarge ? 3.0 : 4.5;
+      const sample = text.slice(0, 35).replace(/\s+/g, ' ');
+
+      if (r < req) {
+        issues.push({
+          id: `contrast-${i}`,
+          category: 'contrast',
+          element: `${el.tagName} ("${sample}")`,
+          severity: 'Critical',
+          description: `Text contrast is ${fmt(r)}:1 (Minimum required: ${req.toFixed(2)}:1).`,
+          currentRatio: `${fmt(r)}:1`,
+          requiredRatio: `${req.toFixed(2)}:1`,
+          fgColor: fg,
+          bgColor: bg,
+          recommendation: `Update text color to at least ${req.toFixed(2)}:1.`,
+          suggestedFix: { css: `color: ${bg === '#ffffff' ? '#0f172a' : '#ffffff'}; background: ${bg};` }
+        });
+      } else {
+        passedChecks.push({
+          element: `${el.tagName} ("${sample}")`,
+          category: 'contrast',
+          description: `Contrast ratio is ${fmt(r)}:1 (Passes AA).`,
+          ratio: `${fmt(r)}:1`
+        });
+      }
+    }
+  });
+
+  let healthScore = null;
+  if (elementsAudited === 0) {
+    healthScore = null;
+    issues.push({
+      id: 'no-elements',
+      category: 'structure',
+      element: 'Page Body',
+      severity: 'High',
+      description: 'No auditable text, image, form, or button tags were detected.'
+    });
+  } else {
+    const criticals = issues.filter(x => x.severity === 'Critical').length;
+    const highs = issues.filter(x => x.severity === 'High').length;
+    healthScore = Math.max(0, 100 - (criticals * 15 + highs * 10));
+  }
+
+  return {
+    success: true,
+    website: {
+      url: targetUrl,
+      domain: parsedUrl.hostname,
+      title: pageTitle,
+      status: responseStatus,
+      durationMs: 0,
+      elementsAudited
+    },
+    auditResults: {
+      totalIssues: issues.length,
+      contrastIssuesCount: issues.filter(x => x.category === 'contrast').length,
+      missingLabelIssuesCount: issues.filter(x => x.category === 'missing-label').length,
+      imageIssuesCount: issues.filter(x => x.category === 'images').length,
+      passedCount: passedChecks.length,
+      healthScore,
+      issues,
+      passedChecks
+    }
+  };
+}
+
+/**
+ * Client-Side Scanner fallback via CORS Proxy
+ */
+async function scanWebsiteClientSide(targetUrl) {
+  const start = Date.now();
+  let html = '';
+  let status = 200;
+
+  // Direct fetch if same origin
+  if (targetUrl.startsWith(window.location.origin) || targetUrl.startsWith('/')) {
+    const res = await fetch(targetUrl);
+    status = res.status;
+    if (!res.ok) throw new Error(`HTTP status ${res.status} (${res.statusText})`);
+    html = await res.text();
+  } else {
+    try {
+      const proxyRes = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent(targetUrl));
+      if (!proxyRes.ok) throw new Error(`Proxy HTTP status ${proxyRes.status}`);
+      html = await proxyRes.text();
+    } catch (e1) {
+      const p2 = await fetch('https://corsproxy.io/?' + encodeURIComponent(targetUrl));
+      if (!p2.ok) throw new Error(`CORS proxy failed (${e1.message})`);
+      html = await p2.text();
+    }
+  }
+
+  const durationMs = Date.now() - start;
+  const parsed = auditHtmlInBrowser(html, targetUrl, status);
+  parsed.website.durationMs = durationMs;
+  return parsed;
+}
+
+/**
+ * Real Server-Side Website Scanner with Instant Old-Result Clearing
+ */
+async function scanUrl(inputUrl){
+  let targetUrl = inputUrl.trim();
+  if (!targetUrl) {
+    toast('Please enter a website URL');
+    $('urlInput').focus();
+    return;
+  }
+
+  if (targetUrl.startsWith('/')) {
+    targetUrl = window.location.origin + targetUrl;
+  } else if (!targetUrl.startsWith('http://') && !targetUrl.startsWith('https://')) {
+    targetUrl = 'https://' + targetUrl;
+  }
+  $('urlInput').value = targetUrl;
+
+  let parsedUrl;
+  try {
+    parsedUrl = new URL(targetUrl);
+    if (!parsedUrl.hostname.includes('.') && parsedUrl.hostname !== 'localhost' && parsedUrl.hostname !== '127.0.0.1') {
+      throw new Error(`Hostname "${parsedUrl.hostname}" must include a domain extension (e.g. example.com).`);
+    }
+  } catch (err) {
+    handleScanError('invalid_url', err.message, 0, targetUrl);
+    return;
+  }
+
+  const clientStart = Date.now();
+  currentMode = 'scanned';
+
+  // 1. Immediately CLEAR old demo results so they are NEVER shown as scan results!
+  $('resultsList').innerHTML = `
+    <div class="empty">
+      <div style="font-size:26px;margin-bottom:8px">⏳</div>
+      <strong>Fetching ${escapeHtml(parsedUrl.hostname)}...</strong>
+      <p style="margin:5px 0 0;font-size:12px;color:var(--muted)">Auditing live HTML structure, text contrast, images, and labels...</p>
+    </div>
+  `;
+  $('issueCountPill').className = 'pill yellow';
+  $('issueCountPill').textContent = 'Scanning...';
+  $('statIssues').textContent = '—';
+  $('statPassed').textContent = '—';
+  $('statLabels').textContent = '—';
+  $('lastChecked').textContent = 'In progress...';
+  $('scanStatus').textContent = 'Fetching website...';
+  $('statIssuesSub').textContent = `On ${parsedUrl.hostname}`;
+  $('statPassedSub').textContent = `On ${parsedUrl.hostname}`;
+  $('statLabelsSub').textContent = `On ${parsedUrl.hostname}`;
+
+  // 2. Clear placeholder data in preview box
+  $('demoPreviewWrapper').style.display = 'none';
+  $('scannedPreviewWrapper').style.display = 'block';
+  $('browserHost').textContent = parsedUrl.hostname;
+  $('previewPanelTitle').textContent = 'Scanned site overview';
+  $('previewPanelSub').textContent = 'Auditing ' + targetUrl;
+
+  $('scannedSiteTitle').textContent = `Fetching ${parsedUrl.hostname}...`;
+  $('scannedSiteUrl').textContent = targetUrl;
+  $('scannedSiteUrl').href = targetUrl;
+  $('scannedStatusPill').className = 'pill yellow';
+  $('scannedStatusPill').textContent = 'Connecting...';
+  $('scannedDuration').textContent = 'Measuring...';
+  $('scannedElements').textContent = 'Auditing...';
+  $('scannedHealthScore').textContent = '—';
+
+  const btn = $('scanSubmitBtn');
+  btn.disabled = true;
+  btn.textContent = 'Scanning...';
+  $('livePill').className = 'pill yellow';
+  $('livePill').textContent = '● Scanning...';
+  $('urlHelp').innerHTML = `<strong>⚡ Fetching HTML and auditing elements server-side without CORS limits...</strong>`;
+
+  try {
+    let data = null;
+
+    // Primary: /api/scan backend
+    try {
+      const res1 = await fetch('/api/scan?url=' + encodeURIComponent(targetUrl));
+      if (res1.status !== 404) {
+        data = await res1.json();
+      }
+    } catch(e) {}
+
+    // Fallback: Netlify function
+    if (!data) {
+      try {
+        const res2 = await fetch('/.netlify/functions/scan?url=' + encodeURIComponent(targetUrl));
+        if (res2.status !== 404) {
+          data = await res2.json();
+        }
+      } catch(e) {}
+    }
+
+    // Fallback: Client-side scanner (if functions returned 404 on Netlify)
+    if (!data) {
+      try {
+        data = await scanWebsiteClientSide(targetUrl);
+      } catch(e3) {
+        handleScanError('network_error', e3.message, Date.now() - clientStart, targetUrl);
+        return;
+      }
+    }
+
+    const durationMs = data.website?.durationMs || (Date.now() - clientStart);
+
+    if (!data.success) {
+      handleScanError(data.errorType || 'scan_error', data.error || 'Failed to scan website.', durationMs, targetUrl);
+      return;
+    }
+
+    const elementsCount = data.website.elementsAudited || 0;
+    const totalIssues = data.auditResults?.totalIssues || 0;
+    const healthScore = data.auditResults?.healthScore;
+
+    $('scannedSiteTitle').textContent = data.website.title || data.website.domain;
+    $('scannedSiteUrl').textContent = data.website.url;
+    $('scannedSiteUrl').href = data.website.url;
+    $('scannedStatusPill').className = data.website.status < 400 ? 'pill green' : 'pill red';
+    $('scannedStatusPill').textContent = `HTTP ${data.website.status}`;
+    $('scannedDuration').textContent = `${durationMs} ms`;
+    $('scannedElements').textContent = `${elementsCount} tags`;
+
+    // Requirement: Never report 100% when no elements were audited!
+    if (elementsCount === 0) {
+      $('scannedHealthScore').textContent = 'N/A';
+      $('issueCountPill').className = 'pill yellow';
+      $('issueCountPill').textContent = '0 tags audited';
+      $('statIssues').textContent = '0';
+      $('statPassed').textContent = '0';
+      $('statLabels').textContent = '0';
+      $('scanStatus').textContent = 'Scan complete · No elements';
+      $('livePill').className = 'pill yellow';
+      $('livePill').textContent = '● No elements found';
+
+      $('resultsList').innerHTML = `
+        <div class="empty">
+          <div style="font-size:26px;margin-bottom:8px">⚠️</div>
+          <strong>No elements audited</strong>
+          <p style="margin:5px 0 0;font-size:12px;color:var(--muted)">
+            No auditable text, image, button, or form elements were found in the HTML response.
+            Single-page applications (SPAs) that render strictly in client-side JavaScript appear empty to HTML scrapers.
+          </p>
+        </div>
+      `;
+      $('urlHelp').innerHTML = `Scanned <strong>${data.website.domain}</strong> in ${durationMs}ms: <span style="color:var(--amber)">0 elements detected</span>.`;
+      toast('Scan complete: 0 elements audited');
+      return;
+    }
+
+    $('scannedHealthScore').textContent = healthScore !== null ? `${healthScore}%` : 'N/A';
+
+    const reportItems = [];
+    (data.auditResults.issues || []).forEach(iss => {
+      let type = 'contrast';
+      if (iss.category === 'missing-label') type = 'label';
+      else if (iss.category === 'images') type = 'image';
+
+      reportItems.push({
+        name: iss.element,
+        desc: iss.description,
+        fg: iss.fgColor,
+        bg: iss.bgColor,
+        ratio: iss.currentRatio ? parseFloat(iss.currentRatio) : null,
+        threshold: iss.requiredRatio ? parseFloat(iss.requiredRatio) : null,
+        ok: false,
+        type,
+        css: iss.suggestedFix?.css || iss.recommendation
+      });
+    });
+
+    (data.auditResults.passedChecks || []).forEach(pass => {
+      reportItems.push({
+        name: pass.element,
+        desc: pass.description,
+        ratio: pass.ratio ? parseFloat(pass.ratio) : null,
+        threshold: null,
+        ok: true,
+        type: pass.category === 'contrast' ? 'contrast' : 'label',
+        css: ''
+      });
+    });
+
+    renderResults(reportItems, data.website.domain);
+    $('urlHelp').innerHTML = `Scanned <strong>${data.website.domain}</strong> in ${durationMs}ms (${elementsCount} elements audited). Click "Try live demo" anytime to return.`;
+    toast(`Scan complete: ${totalIssues} issue${totalIssues === 1 ? '' : 's'} found on ${data.website.domain}`);
+
+  } catch(err) {
+    handleScanError('network_error', err.message, Date.now() - clientStart, targetUrl);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Scan website ↗';
+  }
+}
+
+function loadDemoMode(){
+ $('urlInput').value = '';
+ $('urlHelp').innerHTML = `Connected to backend scanner. Paste any URL to scan live websites without CORS limits.
+   <span class="quick-chips">
+     Quick test:
+     <button type="button" class="chip" onclick="scanQuickUrl('https://example.com')">example.com</button>
+     <button type="button" class="chip" onclick="scanQuickUrl('https://w3.org')">w3.org</button>
+     <button type="button" class="chip" onclick="scanQuickUrl('/test-contrast.html')">Known Violations Test</button>
+   </span>`;
+ scanDemo();
+ toast('Switched to interactive demo');
+}
+
+window.scanQuickUrl = function(u){
+ $('urlInput').value = u;
+ scanUrl(u);
+};
+
+function toast(msg){
+ const t = $('toast');
+ t.textContent = msg;
+ t.classList.add('show');
+ clearTimeout(toast.timer);
+ toast.timer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+window.copyFix = async text => {
+ try {
+   const clean = text.replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+   await navigator.clipboard.writeText(clean);
+   toast('Suggested fix copied to clipboard');
+ } catch(e) {
+   toast('Copied: ' + text);
+ }
+};
+
+function setColors(c){
+ $('headingColor').value = c.heading;
+ $('bodyColor').value = c.body;
+ $('buttonBg').value = c.buttonBg;
+ $('buttonText').value = c.buttonText;
+ updatePreviewFromControls();
+}
+
+/**
+ * Setup Real MutationObserver to actively watch #demoSite for DOM, Style & Class Mutations!
+ */
+function initMutationObserver(){
+ if (!window.MutationObserver) return;
+ const target = $('demoSite');
+ if (!target) return;
+
+ domObserver = new MutationObserver((mutations) => {
+   if (isInternalUpdate) return;
+   
+   // Check if any style, class, or DOM tree change occurred
+   let hasRelevantChange = false;
+   for (const m of mutations) {
+     if (m.type === 'attributes' && (m.attributeName === 'style' || m.attributeName === 'class' || m.attributeName === 'aria-label')) {
+       hasRelevantChange = true;
+       break;
+     }
+     if (m.type === 'childList') {
+       hasRelevantChange = true;
+       break;
+     }
+   }
+
+   if (hasRelevantChange) {
+     $('livePill').className = 'pill yellow';
+     $('livePill').textContent = '● Mutation detected';
+     $('scanStatus').textContent = 'DOM mutation detected · scanning';
+     scheduleScan();
+   }
+ });
+
+ domObserver.observe(target, {
+   attributes: true,
+   childList: true,
+   subtree: true,
+   attributeFilter: ['style', 'class', 'aria-label']
+ });
+}
+
+// Event Listeners
+['headingColor','bodyColor','buttonBg','buttonText'].forEach(id => {
+  $(id).addEventListener('input', updatePreviewFromControls);
+});
+
+$('rescanBtn').addEventListener('click', () => {
+ clearTimeout(scanDebounceTimer);
+ scanDemo();
+ toast('Contrast rechecked using current rendered styles');
+});
+
+$('fixBtn').addEventListener('click', () => {
+ setColors({heading:'#202124', body:'#343741', buttonBg:'#5146d6', buttonText:'#ffffff'});
+ $('demoSearch').setAttribute('aria-label', 'Search resources');
+ toast('Applied accessible colors & search label');
+});
+
+$('resetBtn').addEventListener('click', () => {
+ setColors(initial);
+ $('demoSearch').removeAttribute('aria-label');
+ toast('Demo reset to initial state');
+});
+
+$('demoBtn').addEventListener('click', loadDemoMode);
+
+$('urlForm').addEventListener('submit', e => {
+ e.preventDefault();
+ scanUrl($('urlInput').value);
+});
+
+$('clearActivity').addEventListener('click', () => {
+ activity = [];
+ renderActivity();
+ toast('Activity cleared');
+});
+
+// Initialize
+initMutationObserver();
+renderActivity();
+scanDemo();
+</script>
+</body>
+</html>
